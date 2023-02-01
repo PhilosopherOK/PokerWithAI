@@ -1,15 +1,19 @@
 package MainGame;
 
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class CardDeckAndPhase {
     private List<String> cardDeck;
     private int bank;
-    private List<Player>players;
+    private List<Player> players;
+    Random random = new Random();
     Scanner sc = new Scanner(System.in);
+
+    public void startGame(List<Player> players) {
+        this.players = players;
+
+    }
+
     List<String> createDeck() {
         String[] suitMarks = new String[]{"♣", "♠", "♥", "♦"};
         String[] value = new String[]{"2", "3", "4", "5", "6", "7",
@@ -24,9 +28,15 @@ public class CardDeckAndPhase {
         bank = 0;
         return cardDeck;
     }
-    public void startGame(List<Player> players) {
-        this.players = players;
 
+    private int maxLot() {
+        int maxLot = 0;
+        for (Player player : players) {
+            if (maxLot < player.getLot()) {
+                maxLot = player.getLot();
+            }
+        }
+        return maxLot;
     }
 
     public void dealingCards(Player player) {
@@ -39,8 +49,8 @@ public class CardDeckAndPhase {
     }
 
     void doSteps(Player player) {
-        System.out.println(Player.class + "u can write only one step, " +
-                "its -'fold, check, bet, call, raise'");
+        System.out.println(player.getName() + "u can write only one step, " +
+                "its -'fold, check, call, raise'");
         String stepsInFirstPhase = sc.next();
         switch (stepsInFirstPhase) {
             case "fold":
@@ -48,9 +58,6 @@ public class CardDeckAndPhase {
                 break;
             case "check":
                 check(player);
-                break;
-            case "bet":
-                bet(player);
                 break;
             case "call":
                 call(player);
@@ -62,9 +69,10 @@ public class CardDeckAndPhase {
                 doSteps(player);
         }
     }
+
     //take down card in hand
-     void fold(Player player) {
-        if (player.getLot() != 0){
+    void fold(Player player) {
+        if (player.getLot() != 0) {
             bank += player.getLot();
             player.setLot(0);
         }
@@ -74,51 +82,60 @@ public class CardDeckAndPhase {
 
     //skip a turn(in first phase it can do only big lot)
     void check(Player player) {
-        System.out.println(player.getName()+ " skip this turn");
-    }
-
-    //do lot(equals or more when big lot)
-    void bet(Player player) {
-        System.out.println("you have "+ player.getMoney() +"how many lots u want to do?" +
-                "  ( please take number more than 0)");
-        int howManyLots;
-        do{
-            howManyLots = sc.nextInt();
-        }while(!sc.hasNext() && sc.nextInt() < 0);
-        player.doLot(howManyLots);
+        System.out.println(player.getName() + " skip this turn with lot " + player.getLot());
     }
 
     // equal lot
     void call(Player player) {
-
+        player.doLot(maxLot() - player.getLot());
+        System.out.println(player.getName()+ "you have " + player.getMoney()+
+                " and your lot is " + player.getLot());
     }
 
     //do more lot than there is now in 2 times
     void raise(Player player) {
-
+        System.out.println(player.getName() + "you have " + player.getMoney() + " and your lot is "
+                + player.getLot() + " How many u want to bet?  (multiple 10 please)");
+        int howLotBet = 0;
+        for (int j = 0; j < 10; j--) {
+            howLotBet = sc.nextInt();
+            if (howLotBet > 0 && howLotBet % 10 == 0) {
+                j = 100;
+            } else {
+                System.out.println("multiple 10 please !");
+            }
+        }
+        player.doLot(howLotBet);
     }
 
 
-
     //first phase in game
-    void preFlop(){
-        for (Player player : players) {
-            int lots = 10;
-            player.setLot(lots);
-            player.setMoney(player.getMoney() - player.getLot());
-            System.out.println(player.getName() + " have a lots " +player.getLot());
-                    lots += 10;
-        }
-        for (Player player : players) {
+    void preFlop() {
+        for(Player player:players){
             dealingCards(player);
         }
-        while(players.get(0).getLot() != players.get(1).getLot()){
-        for (Player player : players) {
+        System.out.println("Your card is:");
+        System.out.println(players.get(0).getCardInHand().toString());
+
+        for(Player player:players){
+            System.out.println(player.getName()+ "you have " + player.getMoney());
             doSteps(player);
         }
+        for(Player player:players){
+            if(player.getLot() != maxLot()){
+                System.out.println(player.getName() +
+                        " Your lot is not actual, please use steps call or raise for up it");
+                System.out.println(player.getName()+ "you have " + player.getMoney());
+                doSteps(player);
+            }else {
+                System.out.println("several lot is "+ maxLot());
+                for(Player player1:players){
+                    bank += player1.getLot();
+                    player1.setLot(0);
+                }
+                System.out.println("Now bank is " + bank);
+            }
         }
-
-
     }
 
     //second phase in game

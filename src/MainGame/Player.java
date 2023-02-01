@@ -8,14 +8,16 @@ public class Player {
     private int lot;
     private int money;
 
-    void doLot(){
-        lot += 20;
-        money -=20;
-    }
-    void doLot(int howManyLots){
-        for (int i = 0; i < howManyLots; i++) {
-            lot += 20;
-            money -=20;
+
+    public int doLot(int lot){
+        if(lot % 10 == 0){
+            this.lot += lot;
+            money -= lot;
+            System.out.println("Your lot is "+ this.lot);
+            return 1;
+        }else{
+            System.out.println("please write lot multiple 10");
+            return 0;
         }
     }
 

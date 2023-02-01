@@ -1,9 +1,13 @@
 package MainGame;
 
+import java.util.Random;
 import java.util.Scanner;
 
 public class game {
     public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        Random random = new Random();
+
 //        CardDeckAndPhase cd = new CardDeckAndPhase();
 //        cd.createDeck();
 //        System.out.println(cd.getCardDeck());
@@ -11,11 +15,7 @@ public class game {
 //        cd.dealingCards(p1);
 //        System.out.println(cd.getCardDeck());
 //        System.out.println(p1.getCardInHand());
-        Scanner sc = new Scanner(System.in);
-        int howManyLots;
-        do{
-            howManyLots = sc.nextInt();
-        }while(!sc.hasNext() && sc.nextInt() <= 0);
-        System.out.println(howManyLots);
+
+
     }
 }
