@@ -7,6 +7,7 @@ public class Player {
     private List <String> cardInHand;
     private int lot;
     private int money;
+    private int score;
 
 
     public int doLot(int lot){
@@ -54,6 +55,20 @@ public class Player {
     }
 
     public void setMoney(int money) {
+        this.money = money;
+    }
+
+    public int getScore() {
+        return score;
+    }
+
+    public int setScore(int score) {
+        this.score = score;
+        return score;
+    }
+
+    public Player(String name ,int money) {
+        this.name = name;
         this.money = money;
     }
 
