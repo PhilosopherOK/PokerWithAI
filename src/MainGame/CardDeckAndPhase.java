@@ -17,7 +17,11 @@ public class CardDeckAndPhase {
 
     public void startGame(List<Player> players) {
         this.players = players;
-
+        createDeck();
+        preFlop();
+        flop();
+        turn();
+        river();
     }
 
     List<String> createDeck() {
@@ -100,14 +104,14 @@ public class CardDeckAndPhase {
         for (Player player : players) {
             System.out.println(player.getName() + "you have " + player.getMoney());
             System.out.println("Your card is:");
-            System.out.println(players.get(0).getCardInHand());
+            System.out.println(player.getCardInHand());
             doSteps(player);
         }
         for (Player player : players) {
             if (player.getLot() != maxLot()) {
                 System.out.println(player.getName() +
                         " Your lot is not actual, please use steps call or raise for up it");
-                System.out.println(player.getName() + "you have " + player.getMoney());
+                System.out.println(player.getName() + " you have " + player.getMoney());
                 doSteps(player);
             } else {
                 System.out.println("Lot" + player.getName() + " equal several lot is " + maxLot());
@@ -382,7 +386,7 @@ public class CardDeckAndPhase {
         return maxValueOfCard;
     }
 
-    void foundCombination(List<String> list) {
+    void foundCombination() {
         for (Player player : players) {
             List<String> cardForFindCombination = new LinkedList<>(cardInTable);
             cardForFindCombination.add(player.getCardInHand().get(0));
@@ -398,45 +402,69 @@ public class CardDeckAndPhase {
                                             if (pare(cardForFindCombination) == 0) {
                                                 if (bestCard(cardForFindCombination) == 0) {
                                                     System.out.println(player.setScore(bestCard(cardForFindCombination)) + "Best cardby " + player.getName());
+                                                    break;
                                                 }
                                             } else {
                                                 System.out.println(player.setScore(pare(cardForFindCombination)) + "Pareby " + player.getName());
+                                                break;
                                             }
                                         } else {
                                             System.out.println(player.setScore(twoPare(cardForFindCombination)) + "Two Pareby " + player.getName());
+                                            break;
                                         }
                                     } else {
                                         System.out.println(player.setScore(set(cardForFindCombination)) + "Setby " + player.getName());
+                                        break;
                                     }
                                 } else {
                                     System.out.println(player.setScore(street(cardForFindCombination)) + "Streetby " + player.getName());
+                                    break;
                                 }
                             } else {
                                 System.out.println(player.setScore(flesh(cardForFindCombination)) + "Fleshby " + player.getName());
+                                break;
                             }
                         } else {
                             System.out.println(player.setScore(fullHouse(cardForFindCombination)) + "Full Houseby " + player.getName());
+                            break;
                         }
                     } else {
                         System.out.println(player.setScore(care(cardForFindCombination)) + "Careby " + player.getName());
+                        break;
                     }
                 } else {
                     System.out.println(player.setScore(streetFlesh(cardForFindCombination)) + "Street Fleshby by " + player.getName());
+                    break;
                 }
             } else {
                 System.out.println(player.setScore(fleshRoyal(cardForFindCombination)) + "Flesh Royal by " + player.getName());
+                break;
             }
         }
+
         if (players.get(0).getScore() > players.get(1).getScore()) {
             System.out.println(players.get(0).getName() + " is Winner with " + players.get(0).getScore());
+            players.get(0).setMoney(players.get(0).getMoney() + bank);
+            bank = 0;
         } else if (players.get(0).getScore() < players.get(1).getScore()) {
             System.out.println(players.get(1).getName() + " is Winner with " + players.get(1).getScore());
+            players.get(1).setMoney(players.get(1).getMoney() + bank);
+            bank = 0;
         } else {
-            draw(list);
+            draw();
         }
+//        Player winPlayer = new Player("temp", 0);
+//        for (int i = 0; i < list.size(); i++) {
+//            if (players.get(i).getScore() == winPlayer.getScore()) {
+//                draw(list);
+//            }else if (players.get(i).getScore() > winPlayer.getScore()) {
+//                winPlayer = players.get(i);
+//            }
+//        }
+//        System.out.println(winPlayer.getName() + " is Winner with " + winPlayer.getScore());
     }
 
-    void draw(List<String> list) {
+    void draw() {
         if (players.get(0).getScore() == players.get(1).getScore() && players.get(0).getScore() > 100) {
             for (Player player : players) {
                 List<String> cardForFindCombination = new LinkedList<>(cardInTable);
@@ -446,13 +474,23 @@ public class CardDeckAndPhase {
             }
             if (players.get(0).getScore() > players.get(1).getScore()) {
                 System.out.println(players.get(0).getName() + " is Winner with " + players.get(0).getScore());
+                players.get(0).setMoney(players.get(0).getMoney() + bank);
+                bank = 0;
             } else if (players.get(0).getScore() < players.get(1).getScore()) {
                 System.out.println(players.get(1).getName() + " is Winner with " + players.get(1).getScore());
+                players.get(1).setMoney(players.get(1).getMoney() + bank);
+                bank = 0;
             } else {
                 System.out.println("Its a draw !");
+                players.get(0).setMoney(players.get(0).getMoney() + (bank/2));
+                players.get(1).setMoney(players.get(1).getMoney() + (bank/2));
+                bank = 0;
             }
         } else {
             System.out.println("Its a draw !");
+            players.get(0).setMoney(players.get(0).getMoney() + (bank/2));
+            players.get(1).setMoney(players.get(1).getMoney() + (bank/2));
+            bank = 0;
         }
     }
 
@@ -460,45 +498,40 @@ public class CardDeckAndPhase {
     void preFlop() {
         System.out.println("Now is preFlop phase, please take your card and do your steps");
         dealingCards();
+        System.out.println(players.get(0).getCardInHand());
+        int startLot = 20;
+        for (int i = random.nextInt(players.size()) - 1; i < players.size() ; i++) {
+            players.get(i).doLot(startLot);
+            startLot -= 10;
+            System.out.println(players.get(i).getLot() + " is lot on start from " + players.get(i).getName());
+        }
         stepsAllPhase();
-
     }
 
     //second phase in game its 3 cards on table and do steps like a first phase
-    void flop() throws InterruptedException {
+    void flop(){
         System.out.println("Now is flop phase, please look on card and do your steps");
         putCartOnTable(3);
-        wait(5000);
         stepsAllPhase();
     }
 
     //third phase in game its 4 cards on table and do steps like a first phase
-    void turn() throws InterruptedException {
+    void turn(){
         System.out.println("Now is turn phase, please look on card and do your steps");
         putCartOnTable(1);
-        wait(5000);
         stepsAllPhase();
     }
 
     //fourth phase in game its 5 cards on table, do steps like a first phase, and finish loop
-    void river() throws InterruptedException {
+    void river() {
         System.out.println("Now is river phase, please look on card and do your steps," +
                 " and in finish we will make a score of points");
         putCartOnTable(1);
-        wait(5000);
-        for (Player player : players) {
-            System.out.println(player.getName() + "you have " + player.getMoney());
-            System.out.println("Your card is:");
-            System.out.println(players.get(0).getCardInHand());
-            doSteps(player);
-        }
-        for (Player player : players) {
-            bank += player.getLot();
-            player.setLot(0);
-        }
-        System.out.println("Now bank is " + bank);
-
-
+        stepsAllPhase();
+        System.out.println(cardInTable);
+        for(Player player: players)
+            System.out.println(player.getCardInHand() + " cards by " + player.getName());
+        foundCombination();
     }
 
     List getCardDeck() {
