@@ -14,7 +14,6 @@ public class Player {
         if(lot % 10 == 0){
             this.lot += lot;
             money -= lot;
-            System.out.println("Your lot is "+ this.lot);
             return 1;
         }else{
             System.out.println("please write lot multiple 10");
