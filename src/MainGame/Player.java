@@ -65,6 +65,8 @@ public class Player {
         this.score = score;
         return score;
     }
+    public Player(){
+    }
 
     public Player(String name ,int money) {
         this.name = name;
