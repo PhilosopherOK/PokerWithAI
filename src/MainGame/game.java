@@ -8,17 +8,8 @@ public class game {
         CardDeckAndPhase cd = new CardDeckAndPhase();
         List<Player> playerList = new LinkedList<>();
         playerList.add(new Player("Ted", 1000));
-        playerList.add(new Player("Bat", 1000));
-        while(true){
-            cd.startGame(playerList);
-            System.out.println("if u wanna to end game, please write 'end'");
-            String end = scanner.nextLine();
-            if (end == "end")
-                break;
-        }
-
-
-
-
+        playerList.add(new Botty("Botty1", 1000));
+        playerList.add(new Botty("Botty2", 1000));
+        cd.startGame(playerList);
     }
 }
